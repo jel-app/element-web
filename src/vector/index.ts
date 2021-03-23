@@ -29,6 +29,15 @@ require('katex/dist/katex.css');
 import {parseQsFromFragment} from "./url_utils";
 import './modernizr';
 
+// JEL
+window["getLoadedSession"] = new Promise(res => {
+    window["getLoadedSessionResolver"] = res;
+});
+
+window["getLifecycle"] = new Promise(res => {
+    window["getLifecycleResolver"] = res;
+});
+
 async function settled(...promises: Array<Promise<any>>) {
     for (const prom of promises) {
         try {
@@ -80,7 +89,8 @@ function checkBrowserFeatures() {
     return featureComplete;
 }
 
-const supportedBrowser = checkBrowserFeatures();
+// TODO JEL, this fails in iframe on displaytable
+const supportedBrowser = true; // checkBrowserFeatures();
 
 // React depends on Map & Set which we check for using modernizr's es6collections
 // if modernizr fails we may not have a functional react to show the error message.

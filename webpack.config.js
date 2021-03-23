@@ -1,12 +1,16 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const fs = require("fs");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const webpack = require("webpack");
 
+const key = fs.readFileSync(path.join(__dirname, "certs", "key.pem"));
+const cert = fs.readFileSync(path.join(__dirname, "certs", "cert.pem"));
+
 let og_image_url = process.env.RIOT_OG_IMAGE_URL;
-if (!og_image_url) og_image_url = 'https://app.element.io/themes/element/img/logos/opengraph.png';
+if (!og_image_url) og_image_url = "https://app.element.io/themes/element/img/logos/opengraph.png";
 
 const additionalPlugins = [
     // This is where you can put your customisation replacements.
@@ -22,28 +26,28 @@ module.exports = (env, argv) => {
 
     const development = {};
     if (argv.mode === "production") {
-        development['devtool'] = 'nosources-source-map';
+        development["devtool"] = "nosources-source-map";
     } else {
         // This makes the sourcemaps human readable for developers. We use eval-source-map
         // because the plain source-map devtool ruins the alignment.
-        development['devtool'] = 'eval-source-map';
+        development["devtool"] = "eval-source-map";
     }
 
     // Resolve the directories for the react-sdk and js-sdk for later use. We resolve these early so we
     // don't have to call them over and over. We also resolve to the package.json instead of the src
     // directory so we don't have to rely on a index.js or similar file existing.
-    const reactSdkSrcDir = path.resolve(require.resolve("matrix-react-sdk/package.json"), '..', 'src');
-    const jsSdkSrcDir = path.resolve(require.resolve("matrix-js-sdk/package.json"), '..', 'src');
+    const reactSdkSrcDir = path.resolve(require.resolve("matrix-react-sdk/package.json"), "..", "src");
+    const jsSdkSrcDir = path.resolve(require.resolve("matrix-js-sdk/package.json"), "..", "src");
 
     return {
         ...development,
 
         entry: {
-            "bundle": "./src/vector/index.ts",
+            bundle: "./src/vector/index.ts",
             "indexeddb-worker": "./src/vector/indexeddb-worker.js",
-            "mobileguide": "./src/vector/mobile_guide/index.js",
-            "jitsi": "./src/vector/jitsi/index.ts",
-            "usercontent": "./node_modules/matrix-react-sdk/src/usercontent/index.js",
+            mobileguide: "./src/vector/mobile_guide/index.js",
+            jitsi: "./src/vector/jitsi/index.ts",
+            usercontent: "./node_modules/matrix-react-sdk/src/usercontent/index.js",
 
             // CSS themes
             "theme-legacy": "./node_modules/matrix-react-sdk/res/themes/legacy-light/css/legacy-light.scss",
@@ -51,7 +55,7 @@ module.exports = (env, argv) => {
             "theme-light": "./node_modules/matrix-react-sdk/res/themes/light/css/light.scss",
             "theme-dark": "./node_modules/matrix-react-sdk/res/themes/dark/css/dark.scss",
             "theme-light-custom": "./node_modules/matrix-react-sdk/res/themes/light-custom/css/light-custom.scss",
-            "theme-dark-custom": "./node_modules/matrix-react-sdk/res/themes/dark-custom/css/dark-custom.scss",
+            "theme-dark-custom": "./node_modules/matrix-react-sdk/res/themes/dark-custom/css/dark-custom.scss"
         },
 
         optimization: {
@@ -61,15 +65,15 @@ module.exports = (env, argv) => {
             splitChunks: {
                 cacheGroups: {
                     styles: {
-                        name: 'styles',
+                        name: "styles",
                         test: /\.css$/,
-                        enforce: true,
+                        enforce: true
                         // Do not add `chunks: 'all'` here because you'll break the app entry point.
                     },
                     default: {
-                        reuseExistingChunk: true,
-                    },
-                },
+                        reuseExistingChunk: true
+                    }
+                }
             },
 
             // This fixes duplicate files showing up in chrome with sourcemaps enabled.
@@ -78,8 +82,8 @@ module.exports = (env, argv) => {
 
             // Minification is normally enabled by default for webpack in production mode, but
             // we use a CSS optimizer too and need to manage it ourselves.
-            minimize: argv.mode === 'production',
-            minimizer: argv.mode === 'production' ? [new TerserPlugin({}), new OptimizeCSSAssetsPlugin({})] : [],
+            minimize: argv.mode === "production",
+            minimizer: argv.mode === "production" ? [new TerserPlugin({}), new OptimizeCSSAssetsPlugin({})] : []
         },
 
         resolve: {
@@ -92,27 +96,27 @@ module.exports = (env, argv) => {
             // the package.json for the dependency. Instead, we rely on the package.json of each
             // layer to have our custom alternate fields to load things in the right order. These are
             // the defaults of webpack prepended with `matrix_src_`.
-            mainFields: ['matrix_src_browser', 'matrix_src_main', 'browser', 'main'],
-            aliasFields: ['matrix_src_browser', 'browser'],
+            mainFields: ["matrix_src_browser", "matrix_src_main", "browser", "main"],
+            aliasFields: ["matrix_src_browser", "browser"],
 
             // We need to specify that TS can be resolved without an extension
-            extensions: ['.js', '.json', '.ts', '.tsx'],
+            extensions: [".js", ".json", ".ts", ".tsx"],
             alias: {
                 // alias any requires to the react module to the one in our path,
                 // otherwise we tend to get the react source included twice when
                 // using `npm link` / `yarn link`.
-                "react": path.resolve(__dirname, 'node_modules/react'),
-                "react-dom": path.resolve(__dirname, 'node_modules/react-dom'),
+                react: path.resolve(__dirname, "node_modules/react"),
+                "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
 
                 // same goes for js-sdk - we don't need two copies.
-                "matrix-js-sdk": path.resolve(__dirname, 'node_modules/matrix-js-sdk'),
+                "matrix-js-sdk": path.resolve(__dirname, "node_modules/matrix-js-sdk"),
                 // and prop-types and sanitize-html
-                "prop-types": path.resolve(__dirname, 'node_modules/prop-types'),
-                "sanitize-html": path.resolve(__dirname, 'node_modules/sanitize-html'),
+                "prop-types": path.resolve(__dirname, "node_modules/prop-types"),
+                "sanitize-html": path.resolve(__dirname, "node_modules/sanitize-html"),
 
                 // Define a variable so the i18n stuff can load
-                "$webapp": path.resolve(__dirname, 'webapp'),
-            },
+                $webapp: path.resolve(__dirname, "webapp")
+            }
         },
 
         module: {
@@ -128,14 +132,14 @@ module.exports = (env, argv) => {
 
                 // olm takes ages for webpack to process, and it's already heavily
                 // optimised, so there is little to gain by us uglifying it.
-                /olm[\\\/](javascript[\\\/])?olm\.js$/,
+                /olm[\\\/](javascript[\\\/])?olm\.js$/
             ],
             rules: [
                 {
                     test: /\.(ts|js)x?$/,
-                    include: (f) => {
+                    include: f => {
                         // our own source needs babel-ing
-                        if (f.startsWith(path.resolve(__dirname, 'src'))) return true;
+                        if (f.startsWith(path.resolve(__dirname, "src"))) return true;
 
                         // we use the original source files of react-sdk and js-sdk, so we need to
                         // run them through babel. Because the path tested is the resolved, absolute
@@ -150,7 +154,7 @@ module.exports = (env, argv) => {
                         // not necessary anyway). So, for anything else, don't babel.
                         return false;
                     },
-                    loader: 'babel-loader',
+                    loader: "babel-loader",
                     options: {
                         cacheDirectory: true
                     }
@@ -160,15 +164,15 @@ module.exports = (env, argv) => {
                     use: [
                         MiniCssExtractPlugin.loader,
                         {
-                            loader: 'css-loader',
+                            loader: "css-loader",
                             options: {
                                 importLoaders: 1,
-                                sourceMap: true,
+                                sourceMap: true
                             }
                         },
                         {
-                            loader: 'postcss-loader',
-                            ident: 'postcss',
+                            loader: "postcss-loader",
+                            ident: "postcss",
                             options: {
                                 sourceMap: true,
                                 plugins: () => [
@@ -196,12 +200,12 @@ module.exports = (env, argv) => {
 
                                     // It's important that this plugin is last otherwise we end
                                     // up with broken CSS.
-                                    require('postcss-preset-env')({stage: 3, browsers: 'last 2 versions'}),
+                                    require("postcss-preset-env")({ stage: 3, browsers: "last 2 versions" })
                                 ],
                                 parser: "postcss-scss",
-                                "local-plugins": true,
-                            },
-                        },
+                                "local-plugins": true
+                            }
+                        }
                     ]
                 },
                 {
@@ -209,21 +213,21 @@ module.exports = (env, argv) => {
                     use: [
                         MiniCssExtractPlugin.loader,
                         {
-                            loader: 'css-loader',
+                            loader: "css-loader",
                             options: {
                                 importLoaders: 1,
-                                sourceMap: true,
+                                sourceMap: true
                             }
                         },
                         {
-                            loader: 'postcss-loader',
-                            ident: 'postcss',
+                            loader: "postcss-loader",
+                            ident: "postcss",
                             options: {
                                 sourceMap: true,
                                 plugins: () => [
                                     // Note that we use slightly different plugins for SCSS.
 
-                                    require('postcss-import')(),
+                                    require("postcss-import")(),
                                     require("postcss-mixins")(),
                                     require("postcss-simple-vars")(),
                                     require("postcss-extend")(),
@@ -231,16 +235,16 @@ module.exports = (env, argv) => {
                                     require("postcss-easings")(),
                                     require("postcss-strip-inline-comments")(),
                                     require("postcss-hexrgba")(),
-                                    require("postcss-calc")({warnWhenCannotResolve: true}),
+                                    require("postcss-calc")({ warnWhenCannotResolve: true }),
 
                                     // It's important that this plugin is last otherwise we end
                                     // up with broken CSS.
-                                    require('postcss-preset-env')({stage: 3, browsers: 'last 2 versions'}),
+                                    require("postcss-preset-env")({ stage: 3, browsers: "last 2 versions" })
                                 ],
                                 parser: "postcss-scss",
-                                "local-plugins": true,
-                            },
-                        },
+                                "local-plugins": true
+                            }
+                        }
                     ]
                 },
                 {
@@ -248,19 +252,19 @@ module.exports = (env, argv) => {
                     loader: "file-loader",
                     type: "javascript/auto", // https://github.com/webpack/webpack/issues/6725
                     options: {
-                        name: '[name].[hash:7].[ext]',
-                        outputPath: '.',
-                    },
+                        name: "[name].[hash:7].[ext]",
+                        outputPath: "."
+                    }
                 },
                 {
                     // cache-bust languages.json file placed in
                     // element-web/webapp/i18n during build by copy-res.js
                     test: /\.*languages.json$/,
                     type: "javascript/auto",
-                    loader: 'file-loader',
+                    loader: "file-loader",
                     options: {
-                        name: 'i18n/[name].[hash:7].[ext]',
-                    },
+                        name: "i18n/[name].[hash:7].[ext]"
+                    }
                 },
                 {
                     test: /\.(gif|png|svg|ttf|woff|woff2|xml|ico)$/,
@@ -270,10 +274,10 @@ module.exports = (env, argv) => {
                         {
                             // Assets referenced in CSS files
                             issuer: /\.(scss|css)$/,
-                            loader: 'file-loader',
+                            loader: "file-loader",
                             options: {
                                 esModule: false,
-                                name: '[name].[hash:7].[ext]',
+                                name: "[name].[hash:7].[ext]",
                                 outputPath: getAssetOutputPath,
                                 publicPath: function(url, resourcePath) {
                                     // CSS image usages end up in the `bundles/[hash]` output
@@ -281,88 +285,88 @@ module.exports = (env, argv) => {
                                     // twice.
                                     const outputPath = getAssetOutputPath(url, resourcePath);
                                     return toPublicPath(path.join("../..", outputPath));
-                                },
-                            },
+                                }
+                            }
                         },
                         {
                             // Assets referenced in HTML and JS files
-                            loader: 'file-loader',
+                            loader: "file-loader",
                             options: {
                                 esModule: false,
-                                name: '[name].[hash:7].[ext]',
+                                name: "[name].[hash:7].[ext]",
                                 outputPath: getAssetOutputPath,
                                 publicPath: function(url, resourcePath) {
                                     const outputPath = getAssetOutputPath(url, resourcePath);
                                     return toPublicPath(outputPath);
-                                },
-                            },
-                        },
-                    ],
-                },
+                                }
+                            }
+                        }
+                    ]
+                }
             ]
         },
 
         plugins: [
             // This exports our CSS using the splitChunks and loaders above.
             new MiniCssExtractPlugin({
-                filename: 'bundles/[hash]/[name].css',
-                ignoreOrder: false, // Enable to remove warnings about conflicting order
+                filename: "bundles/[hash]/[name].css",
+                ignoreOrder: false // Enable to remove warnings about conflicting order
             }),
 
             // This is the app's main entry point.
             new HtmlWebpackPlugin({
-                template: './src/vector/index.html',
+                template: "./src/vector/index.html",
 
                 // we inject the links ourselves via the template, because
                 // HtmlWebpackPlugin will screw up our formatting like the names
                 // of the themes and which chunks we actually care about.
                 inject: false,
-                excludeChunks: ['mobileguide', 'usercontent', 'jitsi'],
-                minify: argv.mode === 'production',
+                excludeChunks: ["mobileguide", "usercontent", "jitsi"],
+                minify: argv.mode === "production",
                 vars: {
-                    og_image_url: og_image_url,
-                },
+                    og_image_url: og_image_url
+                }
             }),
 
             // This is the jitsi widget wrapper (embedded, so isolated stack)
             new HtmlWebpackPlugin({
-                template: './src/vector/jitsi/index.html',
-                filename: 'jitsi.html',
-                minify: argv.mode === 'production',
-                chunks: ['jitsi'],
+                template: "./src/vector/jitsi/index.html",
+                filename: "jitsi.html",
+                minify: argv.mode === "production",
+                chunks: ["jitsi"]
             }),
 
             // This is the mobile guide's entry point (separate for faster mobile loading)
             new HtmlWebpackPlugin({
-                template: './src/vector/mobile_guide/index.html',
-                filename: 'mobile_guide/index.html',
-                minify: argv.mode === 'production',
-                chunks: ['mobileguide'],
+                template: "./src/vector/mobile_guide/index.html",
+                filename: "mobile_guide/index.html",
+                minify: argv.mode === "production",
+                chunks: ["mobileguide"]
             }),
 
             // These are the static error pages for when the javascript env is *really unsupported*
             new HtmlWebpackPlugin({
-                template: './src/vector/static/unable-to-load.html',
-                filename: 'static/unable-to-load.html',
-                minify: argv.mode === 'production',
-                chunks: [],
+                template: "./src/vector/static/unable-to-load.html",
+                filename: "static/unable-to-load.html",
+                minify: argv.mode === "production",
+                chunks: []
             }),
             new HtmlWebpackPlugin({
-                template: './src/vector/static/incompatible-browser.html',
-                filename: 'static/incompatible-browser.html',
-                minify: argv.mode === 'production',
-                chunks: [],
+                template: "./src/vector/static/incompatible-browser.html",
+                filename: "static/incompatible-browser.html",
+                minify: argv.mode === "production",
+                chunks: []
             }),
 
             // This is the usercontent sandbox's entry point (separate for iframing)
             new HtmlWebpackPlugin({
-                template: './node_modules/matrix-react-sdk/src/usercontent/index.html',
-                filename: 'usercontent/index.html',
-                minify: argv.mode === 'production',
-                chunks: ['usercontent'],
+                template: "./node_modules/matrix-react-sdk/src/usercontent/index.html",
+                filename: "usercontent/index.html",
+                minify: argv.mode === "production",
+                chunks: ["usercontent"]
             }),
 
-            ...additionalPlugins,
+            ...additionalPlugins
         ],
 
         output: {
@@ -376,24 +380,29 @@ module.exports = (env, argv) => {
             // an older version of the application to continue to access webpack
             // chunks even after the app is redeployed.
             filename: "bundles/[hash]/[name].js",
-            chunkFilename: "bundles/[hash]/[name].js",
+            chunkFilename: "bundles/[hash]/[name].js"
         },
 
         // configuration for the webpack-dev-server
         devServer: {
+            https: { key, cert },
+            host: "0.0.0.0",
+            public: `hubs.local:8081`,
+            useLocalIp: true,
+            allowedHosts: ["hubs.local"],
             // serve unwebpacked assets from webapp.
-            contentBase: './webapp',
+            contentBase: "./webapp",
 
             // Only output errors, warnings, or new compilations.
             // This hides the massive list of modules.
-            stats: 'minimal',
+            stats: "minimal",
 
             // hot module replacement doesn't work (I think we'd need react-hot-reload?)
             // so webpack-dev-server reloads the page on every update which is quite
             // tedious in Riot since that can take a while.
             hot: false,
-            inline: false,
-        },
+            inline: false
+        }
     };
 };
 
@@ -428,5 +437,5 @@ function getAssetOutputPath(url, resourcePath) {
  * @param {string} path Some path to a file.
  */
 function toPublicPath(path) {
-    return path.replace(/\\/g, '/');
+    return path.replace(/\\/g, "/");
 }

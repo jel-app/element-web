@@ -38,6 +38,10 @@ import VectorBasePlatform from "./platform/VectorBasePlatform";
 
 let lastLocationHashSet: string = null;
 
+window["getLifecycleResolver"]({
+    ...Lifecycle
+});
+
 // Parse the given window.location and return parameters that can be used when calling
 // MatrixChat.showScreen(screen, params)
 function getScreenFromLocation(location: Location) {

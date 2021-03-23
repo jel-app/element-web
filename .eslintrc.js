@@ -1,23 +1,28 @@
 module.exports = {
-    "extends": ["matrix-org", "matrix-org/react"],
-    "env": {
-        "browser": true,
-        "node": true,
-    },
-    "rules": {
-        "quotes": "off",
-    },
-    "overrides": [{
-        "files": ["src/**/*.{ts,tsx}"],
-        "extends": ["matrix-org/ts", "matrix-org/react"],
-        "env": {
-            "browser": true,
-        },
-        "rules": {
-            "quotes": "off",
-            // While converting to ts we allow this
-            "@typescript-eslint/no-explicit-any": "off",
-            "prefer-promise-reject-errors": "off",
-        },
-    }],
+  parser: "babel-eslint",
+  env: {
+    browser: true,
+    es6: true,
+    node: true
+  },
+  globals: {
+    SharedArrayBuffer: true,
+    THREE: true,
+    AFRAME: true,
+    NAF: true,
+    SAF: true,
+    TransformStream: true,
+    SYSTEMS: true
+  },
+  plugins: ["prettier", "react"],
+  rules: {
+    "prettier/prettier": "error",
+    "prefer-const": "error",
+    "no-use-before-define": "error",
+    "no-var": "error",
+    "no-throw-literal": "error",
+    // Light console usage is useful but remove debug logs before merging to master.
+    "no-console": "off"
+  },
+  extends: ["prettier", "plugin:react/recommended", "eslint:recommended", "plugin:react-hooks/recommended"]
 };
