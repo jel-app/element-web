@@ -50,7 +50,7 @@ export default class WebPlatform extends VectorBasePlatform {
      * notifications, otherwise false.
      */
     supportsNotifications(): boolean {
-        return Boolean(window.Notification);
+        return false;
     }
 
     /**
@@ -58,7 +58,7 @@ export default class WebPlatform extends VectorBasePlatform {
      * to display notifications. Otherwise false.
      */
     maySendNotifications(): boolean {
-        return window.Notification.permission === 'granted';
+        return false;
     }
 
     /**
