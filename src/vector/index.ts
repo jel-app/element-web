@@ -38,6 +38,10 @@ window["getLifecycle"] = new Promise(res => {
     window["getLifecycleResolver"] = res;
 });
 
+window["getDispatcher"] = new Promise(res => {
+    window["getDispatcherResolver"] = res;
+});
+
 async function settled(...promises: Array<Promise<any>>) {
     for (const prom of promises) {
         try {

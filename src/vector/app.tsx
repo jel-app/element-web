@@ -32,6 +32,7 @@ import * as Lifecycle from "matrix-react-sdk/src/Lifecycle";
 import type MatrixChatType from "matrix-react-sdk/src/components/structures/MatrixChat";
 import {MatrixClientPeg} from 'matrix-react-sdk/src/MatrixClientPeg';
 import SdkConfig from "matrix-react-sdk/src/SdkConfig";
+import dis from 'matrix-react-sdk/src/dispatcher/dispatcher';
 
 import {parseQs, parseQsFromFragment} from './url_utils';
 import VectorBasePlatform from "./platform/VectorBasePlatform";
@@ -41,6 +42,8 @@ let lastLocationHashSet: string = null;
 window["getLifecycleResolver"]({
     ...Lifecycle
 });
+
+window["getDispatcherResolver"](dis);
 
 // Parse the given window.location and return parameters that can be used when calling
 // MatrixChat.showScreen(screen, params)
