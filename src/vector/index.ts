@@ -34,6 +34,7 @@ window["getLoadedSession"] = new Promise(res => { window["getLoadedSessionResolv
 window["getLifecycle"] = new Promise(res => { window["getLifecycleResolver"] = res; });
 window["getDispatcher"] = new Promise(res => { window["getDispatcherResolver"] = res; });
 window["getStores"] = new Promise(res => { window["getStoresResolver"] = res; });
+window["getConstants"] = new Promise(res => { window["getConstantsResolver"] = res; });
 
 async function settled(...promises: Array<Promise<any>>) {
     for (const prom of promises) {

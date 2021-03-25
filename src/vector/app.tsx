@@ -34,6 +34,8 @@ import {MatrixClientPeg} from 'matrix-react-sdk/src/MatrixClientPeg';
 import SdkConfig from "matrix-react-sdk/src/SdkConfig";
 import dis from 'matrix-react-sdk/src/dispatcher/dispatcher';
 import { RoomNotificationStateStore } from "matrix-react-sdk/src/stores/notifications/RoomNotificationStateStore";
+
+import { NOTIFICATION_STATE_UPDATE } from "matrix-react-sdk/src/stores/notifications/NotificationState";
 import SpaceStore from "matrix-react-sdk/src/stores/SpaceStore";
 
 import {parseQs, parseQsFromFragment} from './url_utils';
@@ -47,7 +49,14 @@ window["getLifecycleResolver"]({
 
 window["getDispatcherResolver"](dis);
 
-window["getStoresResolver"]({ roomNotification: RoomNotificationStateStore.instance, space: SpaceStore.instance });
+window["getStoresResolver"]({
+    roomNotificationStateStore: RoomNotificationStateStore.instance,
+    spaceStore: SpaceStore.instance
+});
+
+window["getConstantsResolver"]({
+    NOTIFICATION_STATE_UPDATE: NOTIFICATION_STATE_UPDATE
+});
 
 // Parse the given window.location and return parameters that can be used when calling
 // MatrixChat.showScreen(screen, params)
