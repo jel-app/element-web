@@ -33,6 +33,8 @@ import type MatrixChatType from "matrix-react-sdk/src/components/structures/Matr
 import {MatrixClientPeg} from 'matrix-react-sdk/src/MatrixClientPeg';
 import SdkConfig from "matrix-react-sdk/src/SdkConfig";
 import dis from 'matrix-react-sdk/src/dispatcher/dispatcher';
+import { RoomNotificationStateStore } from "matrix-react-sdk/src/stores/notifications/RoomNotificationStateStore";
+import SpaceStore from "matrix-react-sdk/src/stores/SpaceStore";
 
 import {parseQs, parseQsFromFragment} from './url_utils';
 import VectorBasePlatform from "./platform/VectorBasePlatform";
@@ -44,6 +46,8 @@ window["getLifecycleResolver"]({
 });
 
 window["getDispatcherResolver"](dis);
+
+window["getStoresResolver"]({ roomNotification: RoomNotificationStateStore.instance, space: SpaceStore.instance });
 
 // Parse the given window.location and return parameters that can be used when calling
 // MatrixChat.showScreen(screen, params)
