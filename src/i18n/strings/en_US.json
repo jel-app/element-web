@@ -7,7 +7,7 @@
     "Decentralised, encrypted chat &amp; collaboration powered by [matrix]": "Decentralised, encrypted chat &amp; collaboration powered by [matrix]",
     "Sign In": "Sign In",
     "Create Account": "Create Account",
-    "Explore rooms": "Explore rooms",
+    "Explore rooms": "Explore channels",
     "The message from the parser is: %(message)s": "The message from the parser is: %(message)s",
     "Invalid JSON": "Invalid JSON",
     "Unexpected error preparing the app. See console for details.": "Unexpected error preparing the app. See console for details.",

@@ -36,8 +36,12 @@ import dis from 'matrix-react-sdk/src/dispatcher/dispatcher';
 import { RoomNotificationStateStore } from "matrix-react-sdk/src/stores/notifications/RoomNotificationStateStore";
 
 import { NOTIFICATION_STATE_UPDATE } from "matrix-react-sdk/src/stores/notifications/NotificationState";
-import SpaceStore from "matrix-react-sdk/src/stores/SpaceStore";
+import { NotificationColor } from "matrix-react-sdk/src/stores/notifications/NotificationColor";
+import SpaceStore, { UPDATE_TOP_LEVEL_SPACES } from "matrix-react-sdk/src/stores/SpaceStore";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import { SettingLevel } from "matrix-react-sdk/src/settings/SettingLevel";
 
+import {getHttpUriForMxc} from 'matrix-js-sdk/src/content-repo';
 import {parseQs, parseQsFromFragment} from './url_utils';
 import VectorBasePlatform from "./platform/VectorBasePlatform";
 
@@ -51,12 +55,20 @@ window["getDispatcherResolver"](dis);
 
 window["getStoresResolver"]({
     roomNotificationStateStore: RoomNotificationStateStore.instance,
-    spaceStore: SpaceStore.instance
+    spaceStore: SpaceStore.instance,
+    settingsStore: SettingsStore
 });
 
 window["getConstantsResolver"]({
-    NOTIFICATION_STATE_UPDATE: NOTIFICATION_STATE_UPDATE
+    NOTIFICATION_STATE_UPDATE: NOTIFICATION_STATE_UPDATE,
+    UPDATE_TOP_LEVEL_SPACES: UPDATE_TOP_LEVEL_SPACES,
+    NotificationColor,
+    SettingLevel
 });
+
+window["getUtilsResolver"]({ 
+    getHttpUriForMxc
+})
 
 // Parse the given window.location and return parameters that can be used when calling
 // MatrixChat.showScreen(screen, params)

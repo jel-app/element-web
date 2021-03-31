@@ -30,11 +30,13 @@ import {parseQsFromFragment} from "./url_utils";
 import './modernizr';
 
 // JEL
+window["IS_JEL"] = true;
 window["getLoadedSession"] = new Promise(res => { window["getLoadedSessionResolver"] = res; });
 window["getLifecycle"] = new Promise(res => { window["getLifecycleResolver"] = res; });
 window["getDispatcher"] = new Promise(res => { window["getDispatcherResolver"] = res; });
 window["getStores"] = new Promise(res => { window["getStoresResolver"] = res; });
 window["getConstants"] = new Promise(res => { window["getConstantsResolver"] = res; });
+window["getUtils"] = new Promise(res => { window["getUtilsResolver"] = res; });
 
 async function settled(...promises: Array<Promise<any>>) {
     for (const prom of promises) {
