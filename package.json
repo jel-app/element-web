@@ -1,11 +1,11 @@
 {
-  "name": "element-web",
+  "name": "neon",
   "version": "1.7.23",
-  "description": "A feature-rich client for Matrix.org",
-  "author": "New Vector Ltd.",
+  "description": "A forked version of Element web for Jel.",
+  "author": "Jel",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vector-im/element-web"
+    "url": "https://github.com/jel-app/neon"
   },
   "license": "Apache-2.0",
   "files": [
