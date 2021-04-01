@@ -50,7 +50,7 @@ module.exports = (env, argv) => {
             usercontent: "./node_modules/matrix-react-sdk/src/usercontent/index.js",
 
             // CSS themes
-            "theme-neon": "./res/themes/neon/css/neon.scss"
+            "theme-neon": "./node_modules/matrix-react-sdk/res/themes/neon/css/neon.scss"
         },
 
         optimization: {

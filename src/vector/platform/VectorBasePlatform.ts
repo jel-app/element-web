@@ -58,7 +58,8 @@ export default abstract class VectorBasePlatform extends BasePlatform {
             bgColor = "#f00";
         }
 
-        this.favicon.badge(notif, { bgColor });
+        //JEL this causes errors in firefox
+        //this.favicon.badge(notif, { bgColor });
     }
 
     setNotificationCount(count: number) {
