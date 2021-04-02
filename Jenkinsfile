@@ -53,7 +53,7 @@ pipeline {
             "*<http://localhost:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}|#${env.BUILD_NUMBER}>* *${env.JOB_NAME}* " +
             "<https://github.com/jel-app/neon/commit/$gitSha|$gitSha> ${neonVersion} " +
             "Neon: ```${gitSha} ${gitMessage}```\n" +
-            "<${smokeURL}?required_version=${neonVersion}|Smoke Test> - to push:\n" +
+            "<${smokeURL}?required_version=${neonVersion}|Smoke Test> - to push:\n"
           )
           def payload = 'payload=' + JsonOutput.toJson([
             text      : text,
