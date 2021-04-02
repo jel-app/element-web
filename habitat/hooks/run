@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+exec 2>&1
+
+set -e
+
+# Make a copy of the distribution for syncing, and inject all the configs.
+TEMP_DIST_PATH="{{ pkg.svc_var_path }}/dist"
+rm -rf $TEMP_DIST_PATH
+mkdir -p $TEMP_DIST_PATH
+cp -R {{ pkg.path }}/webapp/* $TEMP_DIST_PATH
+
+# Inject window.env by splitting file on expected BUILD_CONFIGS line
+if [[ "{{ cfg.deploy.type }}" == "s3" ]] ;
+then
+  # need to upload wasm blobs with wasm content type explicitly because, unlike all
+  # other assets, AWS's built-in MIME type dictionary doesn't know about that one
+
+  AWSCLI={{ pkgPathFor "core/aws-cli" }}/bin/aws
+
+  $AWSCLI s3 sync --region {{ cfg.deploy.region }} --acl public-read --cache-control "public, max-age=31536000" --include "*" --exclude "*.wasm" "$TEMP_DIST_PATH" "s3://{{ cfg.deploy.target }}/neon/latest"
+
+  $AWSCLI s3 sync --region {{ cfg.deploy.region }} --acl public-read --cache-control "public, max-age=31536000" --exclude "*" --include "*.wasm" --content-type "application/wasm" "$TEMP_DIST_PATH" "s3://{{ cfg.deploy.target }}/neon/latest"
+fi
+
+exec sleep 999999999999

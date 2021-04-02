@@ -15,3 +15,5 @@ electron/pub
 /src/component-index.js
 /.tmp
 /webpack-stats.json
+.npm
+results
