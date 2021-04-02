@@ -1,5 +1,5 @@
 pkg_name=neon
-pkg_origin=neon
+pkg_origin=jel
 pkg_maintainer="Greg Fodor <gfodor@jel.app>"
 
 pkg_version="1.0.0"
