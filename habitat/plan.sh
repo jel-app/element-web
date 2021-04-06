@@ -24,11 +24,20 @@ do_build() {
   [ -d "./dotssh" ] && rm -rf ~/.ssh && mv dotssh ~/.ssh
   [ -d "./dotaws" ] && rm -rf ~/.aws && mv dotaws ~/.aws
 
-  # main client
+  # We inject a random token into the build for the base assets path
+  export BASE_ASSETS_PATH="$(echo "base_assets_path" | sha256sum | cut -d' ' -f1)/" # HACK need a trailing slash so webpack'ed semantics line up
+  export BUILD_VERSION="${pkg_version}.$(echo $pkg_prefix | cut -d '/' -f 7)"
+
   npm_config_cache=.npm npm ci --verbose --no-progress
   npm_config_cache=.npm yarn build
+  
+  mkdir -p dist/pages
+  mkdir -p dist/assets
+  mv webapp/*.html dist/pages
+  cp -R webapp/* dist/assets
+  rm -rf webapp
 }
 
 do_install() {
-  cp -R webapp "${pkg_prefix}"
+  cp -R dist "${pkg_prefix}"
 }

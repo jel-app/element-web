@@ -31,11 +31,12 @@ pipeline {
     stage('build') {
       steps {
         script {
+          def baseAssetsPath = env.BASE_ASSETS_PATH
           def targetS3Bucket = env.TARGET_S3_BUCKET
           def slackURL = env.SLACK_URL
           def smokeURL = env.SMOKE_URL
 
-          def habCommand = "/bin/bash scripts/hab-build-and-push.sh \\\"${targetS3Bucket}\\\" \\\"${env.BUILD_NUMBER}\\\" \\\"${env.GIT_COMMIT}\\\""
+          def habCommand = "/bin/bash scripts/hab-build-and-push.sh \\\"${baseAssetsPath}\\\" \\\"${targetS3Bucket}\\\" \\\"${env.BUILD_NUMBER}\\\" \\\"${env.GIT_COMMIT}\\\""
           sh "/usr/bin/script --return -c ${shellString(habCommand)} /dev/null"
 
           def s = $/eval 'ls -rt results/*.hart | head -n 1'/$

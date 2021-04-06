@@ -1,8 +1,9 @@
 #!/bin/bash
 
-export TARGET_S3_BUCKET=$1
-export BUILD_NUMBER=$2
-export GIT_COMMIT=$3
+export BASE_ASSETS_PATH=$1
+export TARGET_S3_BUCKET=$2
+export BUILD_NUMBER=$3
+export GIT_COMMIT=$4
 export BUILD_VERSION="${BUILD_NUMBER} (${GIT_COMMIT})"
 export HAB_BLDR_URL="https://bldr.biome.sh"
 
@@ -34,6 +35,7 @@ hab svc stop $PKG
 # Apparently these vars come in from jenkins with quotes already
 cat > build-config.toml << EOTOML
 [general]
+base_assets_path = $BASE_ASSETS_PATH
 
 [deploy]
 type = "s3"
