@@ -19,16 +19,18 @@ cd $TEMP_DIST_PATH/pages
 
 for f in *.html
 do
-  csplit $f /META_TAGS/ > /dev/null
-  cat xx00 > $f
+  if grep $f "META_TAGS" ; then
+    csplit $f /META_TAGS/ > /dev/null
+    cat xx00 > $f
 
-{{#each cfg.general ~}}
-  echo "<meta name=\"env:{{ @key }}\" content=\"{{ this }}\"/>" >> $f
-{{/each}}
+  {{#each cfg.general ~}}
+    echo "<meta name=\"env:{{ @key }}\" content=\"{{ this }}\"/>" >> $f
+  {{/each}}
 
-  cat xx01 >> $f
-  rm xx00
-  rm xx01
+    cat xx01 >> $f
+    rm xx00
+    rm xx01
+  fi
 done
 
 cd -
