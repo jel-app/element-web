@@ -38,6 +38,9 @@ do_build() {
   cp -R webapp/* dist/assets
   cp config*.json dist/assets
   rm -rf webapp
+
+  # HACK paths within CSS are wrong, gave up on trying to do this more nicely somewhere else
+  find dist/assets/bundles -type f -name *.css -exec sed -i "s/assets\.jel\.app\//assets.jel.app\/neon\/assets\//g" {} \;
 }
 
 do_install() {
