@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import "../configs";
-
 // We have to trick webpack into loading our CSS for us.
 require("./index.scss");
 

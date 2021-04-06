@@ -1,5 +1,3 @@
-import "../configs";
-
 import { getVectorConfig } from "../getconfig";
 
 function onBackToElementClick() {
