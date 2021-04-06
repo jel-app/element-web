@@ -16,6 +16,7 @@ pkg_build_deps=(
 
 pkg_deps=(
     core/aws-cli # AWS cli used for run hook when uploading to S3
+    core/coreutils # Grep is used in runhook
 )
 
 do_build() {
