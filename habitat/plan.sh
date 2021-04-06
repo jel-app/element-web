@@ -35,6 +35,7 @@ do_build() {
   mkdir -p dist/assets
   mv webapp/*.html dist/pages
   cp -R webapp/* dist/assets
+  cp config*.json dist/assets
   rm -rf webapp
 }
 

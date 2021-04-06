@@ -11,10 +11,6 @@ const cert = fs.readFileSync(path.join(__dirname, "certs", "cert.pem"));
 let og_image_url = process.env.RIOT_OG_IMAGE_URL;
 if (!og_image_url) og_image_url = "https://app.element.io/themes/element/img/logos/opengraph.png";
 
-const additionalPlugins = [
-    // This is where you can put your customisation replacements.
-];
-
 /**
  * Merge assets found via CSS and imports into a single tree, while also preserving
  * directories under e.g. `res` or similar.
@@ -394,7 +390,11 @@ module.exports = (env, argv) => {
             //    chunks: ["usercontent"]
             //}),
 
-            ...additionalPlugins
+            new webpack.DefinePlugin({
+                "process.env": JSON.stringify({
+                    BASE_ASSETS_PATH: process.env.BASE_ASSETS_PATH
+                })
+            })
         ],
 
         output: {
@@ -419,6 +419,9 @@ module.exports = (env, argv) => {
             public: `hubs.local:8081`,
             useLocalIp: true,
             allowedHosts: ["hubs.local"],
+            headers: {
+                "Access-Control-Allow-Origin": "*"
+            },
             // serve unwebpacked assets from webapp.
             contentBase: "./webapp",
 

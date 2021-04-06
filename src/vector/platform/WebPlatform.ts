@@ -35,10 +35,11 @@ export default class WebPlatform extends VectorBasePlatform {
 
     constructor() {
         super();
-        // Register service worker if available on this platform
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
+        // JEL not needed
+        //// Register service worker if available on this platform
+        //if ('serviceWorker' in navigator) {
+        //    navigator.serviceWorker.register('sw.js');
+        //}
     }
 
     getHumanReadableName(): string {
@@ -111,7 +112,7 @@ export default class WebPlatform extends VectorBasePlatform {
             request(
                 {
                     method: "GET",
-                    url: "version",
+                    url: `${process.env.BASE_ASSETS_PATH || ""}version`,
                     qs: { cachebuster: Date.now() },
                 },
                 (err, response, body) => {
