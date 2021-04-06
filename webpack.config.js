@@ -4,6 +4,7 @@ const fs = require("fs");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const webpack = require("webpack");
 
 const key = fs.readFileSync(path.join(__dirname, "certs", "key.pem"));
 const cert = fs.readFileSync(path.join(__dirname, "certs", "cert.pem"));
