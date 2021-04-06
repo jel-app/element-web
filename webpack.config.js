@@ -4,7 +4,6 @@ const fs = require("fs");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const webpack = require("webpack");
 
 const key = fs.readFileSync(path.join(__dirname, "certs", "key.pem"));
 const cert = fs.readFileSync(path.join(__dirname, "certs", "cert.pem"));
@@ -15,6 +14,40 @@ if (!og_image_url) og_image_url = "https://app.element.io/themes/element/img/log
 const additionalPlugins = [
     // This is where you can put your customisation replacements.
 ];
+
+/**
+ * Merge assets found via CSS and imports into a single tree, while also preserving
+ * directories under e.g. `res` or similar.
+ *
+ * @param {string} url The adjusted name of the file, such as `warning.1234567.svg`.
+ * @param {string} resourcePath The absolute path to the source file with unmodified name.
+ * @return {string} The returned paths will look like `img/warning.1234567.svg`.
+ */
+function getAssetOutputPath(url, resourcePath) {
+    // `res` is the parent dir for our own assets in various layers
+    // `dist` is the parent dir for KaTeX assets
+    const prefix = /^.*[/\\](dist|res)[/\\]/;
+    if (!resourcePath.match(prefix)) {
+        throw new Error(`Unexpected asset path: ${resourcePath}`);
+    }
+    let outputDir = path.dirname(resourcePath).replace(prefix, "");
+    if (resourcePath.includes("KaTeX")) {
+        // Add a clearly named directory segment, rather than leaving the KaTeX
+        // assets loose in each asset type directory.
+        outputDir = path.join(outputDir, "KaTeX");
+    }
+    return path.join(outputDir, path.basename(url));
+}
+
+/**
+ * Convert path to public path format, which always uses forward slashes, since it will
+ * be placed directly into things like CSS files.
+ *
+ * @param {string} path Some path to a file.
+ */
+function toPublicPath(path) {
+    return `${process.env.BASE_ASSETS_PATH || ""}${path.replace(/\\/g, "/")}`;
+}
 
 module.exports = (env, argv) => {
     if (process.env.CI_PACKAGE) {
@@ -123,11 +156,11 @@ module.exports = (env, argv) => {
                 // overflows (https://github.com/webpack/webpack/issues/1721), and
                 // there is no need for webpack to parse them - they can just be
                 // included as-is.
-                /highlight\.js[\\\/]lib[\\\/]languages/,
+                /highlight\.js[\\/]lib[\\/]languages/,
 
                 // olm takes ages for webpack to process, and it's already heavily
                 // optimised, so there is little to gain by us uglifying it.
-                /olm[\\\/](javascript[\\\/])?olm\.js$/
+                /olm[\\/](javascript[\\/])?olm\.js$/
             ],
             rules: [
                 {
@@ -324,42 +357,42 @@ module.exports = (env, argv) => {
             }),
 
             // This is the jitsi widget wrapper (embedded, so isolated stack)
-            new HtmlWebpackPlugin({
-                template: "./src/vector/jitsi/index.html",
-                filename: "jitsi.html",
-                minify: argv.mode === "production",
-                chunks: ["jitsi"]
-            }),
+            //new HtmlWebpackPlugin({
+            //    template: "./src/vector/jitsi/index.html",
+            //    filename: "jitsi.html",
+            //    minify: argv.mode === "production",
+            //    chunks: ["jitsi"]
+            //}),
 
             // This is the mobile guide's entry point (separate for faster mobile loading)
-            new HtmlWebpackPlugin({
-                template: "./src/vector/mobile_guide/index.html",
-                filename: "mobile_guide/index.html",
-                minify: argv.mode === "production",
-                chunks: ["mobileguide"]
-            }),
+            //new HtmlWebpackPlugin({
+            //    template: "./src/vector/mobile_guide/index.html",
+            //    filename: "mobile_guide/index.html",
+            //    minify: argv.mode === "production",
+            //    chunks: ["mobileguide"]
+            //}),
 
             // These are the static error pages for when the javascript env is *really unsupported*
-            new HtmlWebpackPlugin({
-                template: "./src/vector/static/unable-to-load.html",
-                filename: "static/unable-to-load.html",
-                minify: argv.mode === "production",
-                chunks: []
-            }),
-            new HtmlWebpackPlugin({
-                template: "./src/vector/static/incompatible-browser.html",
-                filename: "static/incompatible-browser.html",
-                minify: argv.mode === "production",
-                chunks: []
-            }),
+            //new HtmlWebpackPlugin({
+            //    template: "./src/vector/static/unable-to-load.html",
+            //    filename: "static/unable-to-load.html",
+            //    minify: argv.mode === "production",
+            //    chunks: []
+            //}),
+            //new HtmlWebpackPlugin({
+            //    template: "./src/vector/static/incompatible-browser.html",
+            //    filename: "static/incompatible-browser.html",
+            //    minify: argv.mode === "production",
+            //    chunks: []
+            //}),
 
             // This is the usercontent sandbox's entry point (separate for iframing)
-            new HtmlWebpackPlugin({
-                template: "./node_modules/matrix-react-sdk/src/usercontent/index.html",
-                filename: "usercontent/index.html",
-                minify: argv.mode === "production",
-                chunks: ["usercontent"]
-            }),
+            //new HtmlWebpackPlugin({
+            //    template: "./node_modules/matrix-react-sdk/src/usercontent/index.html",
+            //    filename: "usercontent/index.html",
+            //    minify: argv.mode === "production",
+            //    chunks: ["usercontent"]
+            //}),
 
             ...additionalPlugins
         ],
@@ -375,7 +408,8 @@ module.exports = (env, argv) => {
             // an older version of the application to continue to access webpack
             // chunks even after the app is redeployed.
             filename: "bundles/[hash]/[name].js",
-            chunkFilename: "bundles/[hash]/[name].js"
+            chunkFilename: "bundles/[hash]/[name].js",
+            publicPath: process.env.BASE_ASSETS_PATH || ""
         },
 
         // configuration for the webpack-dev-server
@@ -400,37 +434,3 @@ module.exports = (env, argv) => {
         }
     };
 };
-
-/**
- * Merge assets found via CSS and imports into a single tree, while also preserving
- * directories under e.g. `res` or similar.
- *
- * @param {string} url The adjusted name of the file, such as `warning.1234567.svg`.
- * @param {string} resourcePath The absolute path to the source file with unmodified name.
- * @return {string} The returned paths will look like `img/warning.1234567.svg`.
- */
-function getAssetOutputPath(url, resourcePath) {
-    // `res` is the parent dir for our own assets in various layers
-    // `dist` is the parent dir for KaTeX assets
-    const prefix = /^.*[/\\](dist|res)[/\\]/;
-    if (!resourcePath.match(prefix)) {
-        throw new Error(`Unexpected asset path: ${resourcePath}`);
-    }
-    let outputDir = path.dirname(resourcePath).replace(prefix, "");
-    if (resourcePath.includes("KaTeX")) {
-        // Add a clearly named directory segment, rather than leaving the KaTeX
-        // assets loose in each asset type directory.
-        outputDir = path.join(outputDir, "KaTeX");
-    }
-    return path.join(outputDir, path.basename(url));
-}
-
-/**
- * Convert path to public path format, which always uses forward slashes, since it will
- * be placed directly into things like CSS files.
- *
- * @param {string} path Some path to a file.
- */
-function toPublicPath(path) {
-    return path.replace(/\\/g, "/");
-}
