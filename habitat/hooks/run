@@ -9,7 +9,7 @@ TEMP_DIST_PATH="{{ pkg.svc_var_path }}/dist"
 rm -rf $TEMP_DIST_PATH
 mkdir -p $TEMP_DIST_PATH
 cp -R {{ pkg.path }}/webapp/* $TEMP_DIST_PATH
-echo "{{ pkg.version }}.{{ pkg.release }} > $TEMP_DIST_PATH/version"
+echo "{{ pkg.version }}.{{ pkg.release }}" > $TEMP_DIST_PATH/version
 
 # Inject window.env by splitting file on expected BUILD_CONFIGS line
 if [[ "{{ cfg.deploy.type }}" == "s3" ]] ;
