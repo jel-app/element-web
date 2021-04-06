@@ -136,12 +136,14 @@ export default class WebPlatform extends VectorBasePlatform {
     }
 
     startUpdater() {
-        this.pollForUpdate();
-        setInterval(this.pollForUpdate, POKE_RATE_MS);
+        // JEL outer app updates
+        //this.pollForUpdate();
+        //setInterval(this.pollForUpdate, POKE_RATE_MS);
     }
 
     async canSelfUpdate(): Promise<boolean> {
-        return true;
+        // JEL outer app updates
+        return false;
     }
 
     pollForUpdate = () => {

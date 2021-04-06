@@ -25,6 +25,7 @@ rm -rf results
 mkdir -p results
 cp -R ~/.ssh ./dotssh # Copy github.com credentials becuase of shared-aframe private repo dep
 cp -R ~/.aws ./dotaws # Copy AWS credentials
+echo "$BUILD_VERSION" > version
 sudo /usr/bin/hab-docker-studio run build
 hab svc unload $PKG
 sudo /usr/bin/hab-pkg-install results/*.hart

@@ -31,4 +31,5 @@ do_build() {
 
 do_install() {
   cp -R webapp "${pkg_prefix}"
+  cp version "${pkg_prefix}"
 }
