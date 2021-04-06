@@ -15,6 +15,25 @@ find $TEMP_DIST_PATH -type f -name *.html -exec sed -i "s/$(echo "base_assets_pa
 find $TEMP_DIST_PATH -type f -name *.css -exec sed -i "s/$(echo "base_assets_path" | sha256sum | cut -d' ' -f1)\//{{ strReplace cfg.general.base_assets_path "/" "\\/" }}/g" {} \;
 
 # Inject window.env by splitting file on expected BUILD_CONFIGS line
+cd $TEMP_DIST_PATH/pages
+
+for f in *.html
+do
+  csplit $f /META_TAGS/ > /dev/null
+  cat xx00 > $f
+
+{{#each cfg.general ~}}
+  echo "<meta name=\"env:{{ @key }}\" content=\"{{ this }}\"/>" >> $f
+{{/each}}
+
+  cat xx01 >> $f
+  rm xx00
+  rm xx01
+done
+
+cd -
+
+# Inject window.env by splitting file on expected BUILD_CONFIGS line
 if [[ "{{ cfg.deploy.type }}" == "s3" ]] ;
 then
   # need to upload wasm blobs with wasm content type explicitly because, unlike all
