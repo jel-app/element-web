@@ -18,7 +18,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import "../configs";
+import "./configs";
 
 // Require common CSS here; this will make webpack process it into bundle.css.
 // Our own CSS (which is themed) is imported via separate webpack entry points
