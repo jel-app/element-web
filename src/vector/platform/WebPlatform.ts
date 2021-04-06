@@ -27,6 +27,7 @@ import {Action} from "matrix-react-sdk/src/dispatcher/actions";
 import { CheckUpdatesPayload } from 'matrix-react-sdk/src/dispatcher/payloads/CheckUpdatesPayload';
 
 import UAParser from 'ua-parser-js';
+import configs from "../configs";
 
 const POKE_RATE_MS = 10 * 60 * 1000; // 10 min
 
@@ -112,7 +113,7 @@ export default class WebPlatform extends VectorBasePlatform {
             request(
                 {
                     method: "GET",
-                    url: `${process.env.BASE_ASSETS_PATH || ""}version`,
+                    url: `${configs.BASE_ASSETS_PATH || ""}version`,
                     qs: { cachebuster: Date.now() },
                 },
                 (err, response, body) => {

@@ -15,12 +15,13 @@ limitations under the License.
 */
 
 import request from "browser-request";
+import configs from "./configs";
 
 // Load the config file. First try to load up a domain-specific config of the
 // form "config.$domain.json" and if that fails, fall back to config.json.
 export async function getVectorConfig(relativeLocation = "") {
-    const specificConfigPromise = getConfig(`${process.env.BASE_ASSETS_PATH || ""}config.${document.domain}.json`);
-    const generalConfigPromise = getConfig((process.env.BASE_ASSETS_PATH || "") + "config.json");
+    const specificConfigPromise = getConfig(`${configs.BASE_ASSETS_PATH || ""}config.${document.domain}.json`);
+    const generalConfigPromise = getConfig((configs.BASE_ASSETS_PATH || "") + "config.json");
 
     try {
         const configJson = await specificConfigPromise;
