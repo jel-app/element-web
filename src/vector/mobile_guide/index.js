@@ -1,4 +1,6 @@
-import {getVectorConfig} from '../getconfig';
+import "../configs";
+
+import { getVectorConfig } from "../getconfig";
 
 function onBackToElementClick() {
     // Cookie should expire in 4 hours
