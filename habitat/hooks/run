@@ -19,7 +19,7 @@ cd $TEMP_DIST_PATH/pages
 
 for f in *.html
 do
-  if grep $f "META_TAGS" ; then
+  if grep "META_TAGS" $f ; then
     csplit $f /META_TAGS/ > /dev/null
     cat xx00 > $f
 
