@@ -34,6 +34,7 @@ do_build() {
   mkdir -p dist/pages
   mkdir -p dist/assets
   mv webapp/*.html dist/pages
+  mv webapp/indexeddb-worker.js dist/pages
   cp -R webapp/* dist/assets
   cp config*.json dist/assets
   rm -rf webapp
