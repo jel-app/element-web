@@ -19,7 +19,7 @@
     "bug_report_endpoint_url": "https://element.io/bugreports/submit",
     "defaultCountryCode": "GB",
     "showLabsSettings": false,
-    "sync_timeline_limit:": 250,
+    "sync_timeline_limit": 250,
     "features": {
         "feature_new_spinner": false
     },
